@@ -32,11 +32,11 @@ def application(environ, start_response):
     else:
         ctype = 'text/html'
         try:
-            path = environ['OPENSHIFT_PYTHON_DIR'] if openshift else ''
+            path = environ['OPENSHIFT_PYTHON_DIR']+'wsgi/' if openshift else ''
             file = open(path+'static/index.html','r')
             response_body = path#file.read()
         except:
-            response_body = "could not read file "+path+"'index.html'"
+            response_body = "could not read file "+path+"index.html"
 
     status = '200 OK'
     response_headers = [('Content-Type', ctype), ('Content-Length', str(len(response_body)))]
