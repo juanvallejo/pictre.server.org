@@ -31,8 +31,8 @@ def application(environ, start_response):
         response_body = "You are trying to access static files"
     else:
         ctype = 'text/html'
-        file = open('static/index.html','r')
-        response_body = file.read()
+    #    file = open('static/index.html','r')
+        response_body = "word dude"
 
     status = '200 OK'
     response_headers = [('Content-Type', ctype), ('Content-Length', str(len(response_body)))]
