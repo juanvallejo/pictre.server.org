@@ -33,10 +33,10 @@ def application(environ, start_response):
         ctype = 'text/html'
         try:
             path = environ['DOCUMENT_ROOT'] if openshift else ''
-            file = open(path+'static/index.html','r')
-            response_body = path#file.read()
+            file = open(path+'static/README','r')
+            response_body = file.read()
         except:
-            response_body = "could not read file "+path+"/static/index.html"
+            response_body = "could not read file "+path+"/static/__file__ --("+__file__+")"
 
     status = '200 OK'
     response_headers = [('Content-Type', ctype), ('Content-Length', str(len(response_body)))]
