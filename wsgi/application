@@ -36,7 +36,7 @@ def application(environ, start_response):
             file = open(path+'static/index.html','r')
             response_body = path#file.read()
         except:
-            response_body = "could not read file 'index.html'"
+            response_body = "could not read file "+path+"'index.html'"
 
     status = '200 OK'
     response_headers = [('Content-Type', ctype), ('Content-Length', str(len(response_body)))]
@@ -50,6 +50,6 @@ def application(environ, start_response):
 if __name__ == '__main__':
     from wsgiref.simple_server import make_server
     httpd = make_server('localhost', 8051, application)
-    # Wait for a single request, serve it and quit.
+    # Serve requests until server stops. Use .handle_request() for a single use
     httpd.serve_forever()
 
