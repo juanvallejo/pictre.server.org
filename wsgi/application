@@ -16,23 +16,46 @@ except:
 # IMPORTANT: Put any additional includes below this line.  If placed above this
 # line, it's possible required libraries won't be in your searchable path
 # 
+import re
 
 def application(environ, start_response):
-
+    path = environ['DOCUMENT_ROOT']+'/' if openshift else environ['PWD']+"/"
     ctype = 'text/plain'
     if environ['PATH_INFO'] == '/health':
-        response_body = "1"
+         response_body = "1"
     elif environ['PATH_INFO'] == '/env':
         response_body = ['%s: %s' % (key, value)
                     for key, value in sorted(environ.items())]
         response_body = '\n'.join(response_body)
-    elif not openshift and environ['PATH_INFO'] == '/static':
-        ctype = 'text/html'
-        response_body = "You are trying to access static files"
+    elif not openshift and re.match(r"/static/(.*)",environ['PATH_INFO'],re.M|re.I):
+        ctypes = {
+            'css':'text/css',
+            'html':'text/html',
+            'js':'application/javascript',
+            'txt':'text/plain'
+        }
+        ctype = 'text/plain'
+        file = environ['PATH_INFO'].split("/")
+        file = file[len(file)-1]
+        ext = file.split(".")
+        ext = ext[len(ext)-1]
+        ctype_ext = ctypes.get(ext)
+        if(ctype_ext == None):
+            try:
+                file = open(path+environ['PATH_INFO'][1:])
+                response_body = file.read()
+            except IOError:
+                response_body = '404. The file could not be found.'
+        else:
+            try:
+                ctype = ctypes[ext]
+                file = open(path+environ['PATH_INFO'][1:])
+                response_body = file.read()
+            except IOError:
+                response_body = '404. The file could not be found.'
     else:
         ctype = 'text/html'
         try:
-            path = environ['DOCUMENT_ROOT']+'/' if openshift else ''
             file = open(path+'static/index.html','r')
             response_body = file.read()
         except IOError,e:
