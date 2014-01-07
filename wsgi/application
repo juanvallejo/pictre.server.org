@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import os
 
+offline = False
 try:
     virtenv = os.environ['OPENSHIFT_PYTHON_DIR'] + '/virtenv/' or 'none!!'
     virtualenv = os.path.join(virtenv, 'bin/activate_this.py')
@@ -9,6 +10,7 @@ except IOError:
     print 'IOError: Reading virtualenv.'
 except:
     print ('You\'re working offline')
+    offline = True
 
 #
 # IMPORTANT: Put any additional includes below this line.  If placed above this
@@ -24,6 +26,9 @@ def application(environ, start_response):
         response_body = ['%s: %s' % (key, value)
                     for key, value in sorted(environ.items())]
         response_body = '\n'.join(response_body)
+    elif offline and environ['PATH_INFO'] == '/static':
+        ctype = 'text/html'
+        response_body = "You are trying to access static files"
     else:
         ctype = 'text/html'
         response_body = "Hello World. This is the offline compatible server."
